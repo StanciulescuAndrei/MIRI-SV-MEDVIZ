@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>WebGL Demo</title>
+    <link rel="stylesheet" href="./webgl.css" type="text/css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
+      integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
+      crossorigin="anonymous"
+      defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/webgl-demo.js" type="module"></script>
+  </head>
+
+  <body>
+    <canvas id="glcanvas" width="640" height="480"></canvas>
+    <div id="widget-container">
+        <canvas id="color-map-canvas" width="640" height="100" style="background-color: black;"></canvas>
+        <br>
+        <input type="range" id="opacity-value" min="0" max="1" step="0.01" value="1">
+        <input type="number" id="start-slope1-value" step="0.01" placeholder="Start Slope1">
+        <input type="number" id="end-slope1-value" step="0.01" placeholder="End Slope1">
+        <input type="number" id="start-slope2-value" step="0.01" placeholder="Start Slope2">
+        <input type="number" id="end-slope2-value" step="0.01" placeholder="End Slope2">
+        <input type="color" id="color-picker" value="#ff0000">
+        <button id="reset-button">Reset</button>
+    </div>
+  </body>
+</html>
