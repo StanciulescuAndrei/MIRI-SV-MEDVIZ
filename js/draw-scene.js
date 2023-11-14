@@ -84,7 +84,7 @@ function setColorAttribute(gl, buffers, programInfo) {
 
 //function drawScene(gl, programInfo, buffers, squareRotation) {
 //function drawScene(gl, programInfo, buffers, cubeRotation) {
-function drawScene(gl, programInfo, buffers, texture, cubeRotation, camera) {
+function drawScene(gl, programInfo, buffers, texture, camera) {
 
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque

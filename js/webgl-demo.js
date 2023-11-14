@@ -1,11 +1,8 @@
 import { initBuffers } from "./init-buffers.js";
 import { drawScene } from "./draw-scene.js";
 import { initializeColorMap} from "./transfer-function.js";
+import { loadModel } from "./load-model.js";
 import camera from './camera.js';
-
-//let squareRotation = 0.0;
-let cubeRotation = 0.0;
-let deltaTime = 0;
 
 
 //
@@ -182,7 +179,18 @@ main();
 // start here
 //
 function main() {
+
+  var loadButton = document.getElementById('load-button');
+  //Add the listeners
+  if (loadButton) {
+    loadButton.addEventListener('click', loadModel);
+  } else {
+    console.error('Button not found.');
+  }
+  
+
   const canvas = document.querySelector("#glcanvas");
+  const fps = document.getElementById("fps");
   // Initialize the GL context
   const gl = canvas.getContext("webgl");
 
@@ -233,6 +241,9 @@ function main() {
   //TRANSFER FUNCTION
   initializeColorMap(0, 255);
 
+  //FPS
+  let startTime = Date.now();
+  let fpsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
   //RENDER ROUTINE
   // Here's where we call the routine that builds all the
@@ -251,16 +262,29 @@ function main() {
   let then = 0;
   // Draw the scene repeatedly
   function render(now) {
-    now *= 0.001; // convert to seconds
-    deltaTime = now - then;
-    then = now;
+  
 
-    //drawScene(gl, programInfo, buffers, squareRotation);
-    //squareRotation += deltaTime;
-    
-    //drawScene(gl, programInfo, buffers, cubeRotation);
-    drawScene(gl, programInfo, buffers, texture, cubeRotation, camera);
-    cubeRotation += deltaTime;
+    drawScene(gl, programInfo, buffers, texture, camera);
+  
+  
+    //Frame rate
+    const currentTime = Date.now();
+    const elapsedMilliseconds = currentTime - startTime;
+    const currentFramerate = Math.round((1. / elapsedMilliseconds) * 1000);
+    //Compute the average of last n-fps
+    fpsArray.push(currentFramerate);
+    fpsArray.shift();
+    let sum = 0;
+    fpsArray.forEach(function(item, index) { sum += item;});
+    const fpsAvg = sum/fpsArray.length;
+    // Display the framerate on the canvas
+    if(currentFramerate < 3)
+      fps.textContent = "FPS: " + currentFramerate;
+    else
+      fps.textContent = "FPS: " + Math.round(fpsAvg);
+    startTime = Date.now();
+
+
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
