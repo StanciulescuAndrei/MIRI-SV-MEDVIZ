@@ -7,6 +7,7 @@ var startSlope1Value = document.getElementById('start-slope1-value');
 var endSlope1Value = document.getElementById('end-slope1-value');
 var startSlope2Value = document.getElementById('start-slope2-value');
 var endSlope2Value = document.getElementById('end-slope2-value');
+var colorValue = document.getElementById('color-picker');
 
 // Get the 2D drawing context of the canvas
 const ctx = colorMapCanvas.getContext('2d');
@@ -17,41 +18,61 @@ let startSlope1 = 0;
 let endSlope1 = 0;
 let startSlope2 = 0;
 let endSlope2 = 0;
+let selectedColor = "#FFFFFF";
 let transferFunctionChart;
+let tF = {
+    x0: 0,
+    x1: 0,
+    x2: 0,
+    x3: 0,
+    opacity: 1,
+    color: [1,1,1],
+  };
 
-//Add the listeners
-opacityValue.addEventListener('input', function() {
-    opacity = parseFloat(opacityValue.value);
-    updateTransferFunction();
-});
-startSlope1Value.addEventListener('input', function() {
-    startSlope1 = parseFloat(startSlope1Value.value);
-    updateTransferFunction();
-});
-endSlope1Value.addEventListener('input', function() {
-    endSlope1 = parseFloat(endSlope1Value.value);
-    updateTransferFunction();
-});
-startSlope2Value.addEventListener('input', function() {
-    startSlope2 = parseFloat(startSlope2Value.value);
-    updateTransferFunction();
-});
-endSlope2Value.addEventListener('input', function() {
-    endSlope2 = parseFloat(endSlope2Value.value);
-    updateTransferFunction();
-});
+// Helper function to convert hex color to RGB components
+function hexToRgb(hex) {
+    // Remove the hash sign if it's present
+    hex = hex.replace(/^#/, '');
 
+    // Parse the hex color
+    const bigint = parseInt(hex, 16);
+
+    // Extract RGB components
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+
+    return [r, g, b];
+}
 
 // Initialize the transfer function color map
 function initializeColorMap(minValue, maxValue) {
     // Set initial parameters (adjust these as needed)
-    updateOpacity(1);
-    updateStartSlope1(minValue);
-    updateEndSlope1(maxValue);
-    updateStartSlope2(maxValue);
-    updateEndSlope2(maxValue);
+    opacity = 1;
+    opacityValue.value = opacity;
+    startSlope1 = minValue;
+    startSlope1Value.value = minValue;
+    endSlope1 = maxValue;
+    endSlope1Value.value = maxValue;
+    startSlope2 = maxValue;
+    startSlope2Value.value = maxValue;
+    endSlope2 = maxValue;
+    endSlope2Value.value = maxValue;
+    selectedColor = "#FFFFFF";
+    colorValue.value = selectedColor;
+    
 
-    let tf1 = [
+    //update the domain
+    tF.x0 = startSlope1;
+    tF.x1 = endSlope1;
+    tF.x2 = startSlope2;
+    tF.x3 = endSlope2;
+    tF.opacity = opacity;
+    const rgb = hexToRgb(selectedColor);
+    tF.color = rgb.map(component => component / 255);
+
+    //create the visualization
+    let tfVis = [
         {x: startSlope1, y: 0},
         {x: endSlope1, y: opacity},
         {x: startSlope2, y: opacity},
@@ -62,9 +83,9 @@ function initializeColorMap(minValue, maxValue) {
         datasets: [
             {
                 label: 'Transfer function',
-                data: tf1,
-                borderColor: 'red',
-                backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                data: tfVis,
+                borderColor: selectedColor,
+                backgroundColor: 'rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2)',
                 borderWidth: 2,
                 pointRadius: 5,
                 pointBackgroundColor: 'white',
@@ -109,50 +130,48 @@ function initializeColorMap(minValue, maxValue) {
         data: tf1Data,
         options: chartOptions,
     });
-}
 
-// Update the opacity value
-function updateOpacity(newOpacity) {
-    opacity = newOpacity;
-    opacityValue.value = opacity;
-}
-
-// Update the start slope1 value
-function updateStartSlope1(newStartSlope) {
-    startSlope1 = newStartSlope;
-    startSlope1Value.value = startSlope1;
-}
-
-// Update the end slope1 value
-function updateEndSlope1(newEndSlope) {
-    endSlope1 = newEndSlope;
-    endSlope1Value.value = endSlope1;
-}
-
-// Update the start slope2 value
-function updateStartSlope2(newStartSlope) {
-    startSlope2 = newStartSlope;
-    startSlope2Value.value = startSlope2;
-}
-
-// Update the end slope2 value
-function updateEndSlope2(newEndSlope) {
-    endSlope2 = newEndSlope;
-    endSlope2Value.value = endSlope1;
+    //Add the listeners
+    opacityValue.addEventListener('input', updateTransferFunction);
+    startSlope1Value.addEventListener('input', updateTransferFunction);
+    endSlope1Value.addEventListener('input', updateTransferFunction);
+    startSlope2Value.addEventListener('input', updateTransferFunction);
+    endSlope2Value.addEventListener('input', updateTransferFunction);
+    colorValue.addEventListener('input', updateTransferFunction);
 }
 
 // Function to update the transfer function visualization
 function updateTransferFunction() {
-    let tf1 = [
+    //update values
+    opacity = parseFloat(opacityValue.value);
+    startSlope1 = parseFloat(startSlope1Value.value);
+    endSlope1 = parseFloat(endSlope1Value.value);
+    startSlope2 = parseFloat(startSlope2Value.value);
+    endSlope2 = parseFloat(endSlope2Value.value);
+    selectedColor = colorValue.value;
+
+    //update tF domain
+    tF.x0 = startSlope1;
+    tF.x1 = endSlope1;
+    tF.x2 = startSlope2;
+    tF.x3 = endSlope2;
+    tF.opacity = opacity;
+    const rgb = hexToRgb(selectedColor);
+    tF.color = rgb.map(component => component / 255);
+
+    //update TFVis
+    let tfVis = [
         {x: startSlope1, y: 0},
         {x: endSlope1, y: opacity},
         {x: startSlope2, y: opacity},
         {x: endSlope2, y: 0},
     ];
-    transferFunctionChart.data.datasets[0].data = tf1;
+    transferFunctionChart.data.datasets[0].data = tfVis;
+    transferFunctionChart.data.datasets[0].borderColor = selectedColor;
+    transferFunctionChart.data.datasets[0].backgroundColor = 'rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2)',
     // You can add more advanced visualization techniques as needed.
     transferFunctionChart.update();
 }
 
-export { initializeColorMap };
+export { initializeColorMap, tF };
 

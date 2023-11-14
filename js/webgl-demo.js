@@ -1,6 +1,6 @@
 import { initBuffers } from "./init-buffers.js";
 import { drawScene } from "./draw-scene.js";
-import { initializeColorMap} from "./transfer-function.js";
+import { initializeColorMap, tF} from "./transfer-function.js";
 import { loadModel } from "./load-model.js";
 import camera from './camera.js';
 
@@ -234,6 +234,14 @@ function main() {
       modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
       normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
       uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
+      tF:gl.getUniformLocation(shaderProgram, "uTF"),
+      tFOpacity: gl.getUniformLocation(shaderProgram, "uTFOpacity"),
+      tFColor: gl.getUniformLocation(shaderProgram, "uTFColor"),
+      lightLambda: gl.getUniformLocation(shaderProgram, "uLightLambda"),
+      lightPhi: gl.getUniformLocation(shaderProgram, "uLightPhi"),
+      lightRadius: gl.getUniformLocation(shaderProgram, "uLightRadius"),
+      lightDistance: gl.getUniformLocation(shaderProgram, "uLightDistance"),
+      lightNRays: gl.getUniformLocation(shaderProgram, "uLightNRays"),
     },
   };
 
@@ -254,19 +262,23 @@ function main() {
   const texture = loadTexture(gl, "../img/cubetexture.png");
   // Flip image pixels into the bottom-to-top order that WebGL expects.
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-
-  // Draw the scene
-  //drawScene(gl, programInfo, buffers, squareRotation);
   
   let then = 0;
   // Draw the scene repeatedly
   function render(now) {
-  
+    //PRE-FRAME
+    const light = {
+      lambda: document.getElementById('light-lambda-value').value,
+      phi: document.getElementById('light-phi-value').value,
+      radius: document.getElementById('light-radius-value').value,
+      distance: document.getElementById('light-distance-value').value,
+      nRays: document.getElementById('light-nRays-value').value,
+    }
 
-    drawScene(gl, programInfo, buffers, texture, camera);
+    //RENDER
+    drawScene(gl, programInfo, buffers, texture, camera, tF, light);
   
-  
+    //POST-FRAME
     //Frame rate
     const currentTime = Date.now();
     const elapsedMilliseconds = currentTime - startTime;

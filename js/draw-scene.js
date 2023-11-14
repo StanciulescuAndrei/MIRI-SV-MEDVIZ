@@ -84,7 +84,7 @@ function setColorAttribute(gl, buffers, programInfo) {
 
 //function drawScene(gl, programInfo, buffers, squareRotation) {
 //function drawScene(gl, programInfo, buffers, cubeRotation) {
-function drawScene(gl, programInfo, buffers, texture, camera) {
+function drawScene(gl, programInfo, buffers, texture, camera, tF, light) {
 
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
@@ -93,111 +93,43 @@ function drawScene(gl, programInfo, buffers, texture, camera) {
   gl.depthFunc(gl.LEQUAL); // Near things obscure far things
 
   // Clear the canvas before we start drawing on it.
-
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Create a perspective matrix, a special matrix that is
-  // used to simulate the distortion of perspective in a camera.
-  // Our field of view is 45 degrees, with a width/height
-  // ratio that matches the display size of the canvas
-  // and we only want to see objects between 0.1 units
-  // and 100 units away from the camera.
-
-  // const fieldOfView = (45 * Math.PI) / 180; // in radians
-  // const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-  // const zNear = 0.1;
-  // const zFar = 100.0;
-  // const projectionMatrix = mat4.create();
-
-  // // note: glmatrix.js always has the first argument
-  // // as the destination to receive the result.
-  // mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-
+  //set modelview, projection and normal matrices
   const projectionMatrix = camera.projectionMatrix;
-
-
-
   const modelViewMatrix = camera.viewMatrix;
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
   mat4.transpose(normalMatrix, normalMatrix);
 
-//   // Set the drawing position to the "identity" point, which is
-//   // the center of the scene.
-//   const modelViewMatrix = mat4.create();
-
-//   // Now move the drawing position a bit to where we want to
-//   // start drawing the square.
-//   mat4.translate(
-//     modelViewMatrix, // destination matrix
-//     modelViewMatrix, // matrix to translate
-//     [-0.0, 0.0, -6.0],
-//   ); // amount to translate
-
-//   /*mat4.rotate(
-//     modelViewMatrix, // destination matrix
-//     modelViewMatrix, // matrix to rotate
-//     squareRotation, // amount to rotate in radians
-//     [0, 0, 1],
-// ); // axis to rotate around*/
-//   mat4.rotate(
-//     modelViewMatrix, // destination matrix
-//     modelViewMatrix, // matrix to rotate
-//     cubeRotation, // amount to rotate in radians
-//     [0, 0, 1],
-//   ); // axis to rotate around (Z)
-//   mat4.rotate(
-//     modelViewMatrix, // destination matrix
-//     modelViewMatrix, // matrix to rotate
-//     cubeRotation * 0.7, // amount to rotate in radians
-//     [0, 1, 0],
-//   ); // axis to rotate around (Y)
-//   mat4.rotate(
-//     modelViewMatrix, // destination matrix
-//     modelViewMatrix, // matrix to rotate
-//     cubeRotation * 0.3, // amount to rotate in radians
-//     [1, 0, 0],
-//   ); // axis to rotate around (X)
-//   //Normal matrix
-//   const normalMatrix = mat4.create();
-//   mat4.invert(normalMatrix, modelViewMatrix);
-//   mat4.transpose(normalMatrix, normalMatrix);
-
-
-
-
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
   setPositionAttribute(gl, buffers, programInfo);
-  //setColorAttribute(gl, buffers, programInfo);
   setTextureAttribute(gl, buffers, programInfo);
   setNormalAttribute(gl, buffers, programInfo);
-
-
-
   // Tell WebGL which indices to use to index the vertices
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
-
 
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
 
   // Set the shader uniforms
-  gl.uniformMatrix4fv(
-    programInfo.uniformLocations.projectionMatrix,
-    false,
-    projectionMatrix,
-  );
-  gl.uniformMatrix4fv(
-    programInfo.uniformLocations.modelViewMatrix,
-    false,
-    modelViewMatrix,
-  );
-  gl.uniformMatrix4fv(
-    programInfo.uniformLocations.normalMatrix,
-    false,
-    normalMatrix,
-  );
+  //matrices
+  gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix, );
+  gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix, );
+  gl.uniformMatrix4fv(programInfo.uniformLocations.normalMatrix, false, normalMatrix, );
+  //transferFunction
+  gl.uniform4f(programInfo.uniformLocations.tF, tF.x0, tF.x1, tF.x2, tF.x3);
+  gl.uniform1f(programInfo.uniformLocations.tFOpacity, tF.opacity);
+  gl.uniform3f(programInfo.uniformLocations.tFColor, tF.color[0], tF.color[1], tF.color[2]);
+  //light
+  gl.uniform1f(programInfo.uniformLocations.lightLambda, light.lambda);
+  gl.uniform1f(programInfo.uniformLocations.lightPhi, light.phi);
+  gl.uniform1f(programInfo.uniformLocations.lightRadius, light.radius);
+  gl.uniform1f(programInfo.uniformLocations.lightDistance, light.distance);
+  gl.uniform1i(programInfo.uniformLocations.lightNRays, light.nRays);
+
+  
 
 
   // Tell WebGL we want to affect texture unit 0
