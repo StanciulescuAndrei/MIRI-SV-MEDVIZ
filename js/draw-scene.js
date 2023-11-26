@@ -21,7 +21,7 @@ function setNormalAttribute(gl, buffers, programInfo) {
 
 // tell webgl how to pull out the texture coordinates from buffer
 function setTextureAttribute(gl, buffers, programInfo) {
-  const num = 2; // every coordinate composed of 2 values
+  const num = 3; // every coordinate composed of 2 values
   const type = gl.FLOAT; // the data in the buffer is 32-bit float
   const normalize = false; // don't normalize
   const stride = 0; // how many bytes to get from one set to the next
@@ -82,8 +82,6 @@ function setColorAttribute(gl, buffers, programInfo) {
   gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
 }
 
-//function drawScene(gl, programInfo, buffers, squareRotation) {
-//function drawScene(gl, programInfo, buffers, cubeRotation) {
 function drawScene(gl, programInfo, buffers, texture, camera, tF, light) {
 
 
@@ -106,7 +104,6 @@ function drawScene(gl, programInfo, buffers, texture, camera, tF, light) {
   // buffer into the vertexPosition attribute.
   setPositionAttribute(gl, buffers, programInfo);
   setTextureAttribute(gl, buffers, programInfo);
-  setNormalAttribute(gl, buffers, programInfo);
   // Tell WebGL which indices to use to index the vertices
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
@@ -129,28 +126,23 @@ function drawScene(gl, programInfo, buffers, texture, camera, tF, light) {
   gl.uniform1f(programInfo.uniformLocations.lightDistance, light.distance);
   gl.uniform1i(programInfo.uniformLocations.lightNRays, light.nRays);
 
-  
+  //Textures
+  if(texture != null) {
+    // Tell WebGL we want to affect texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+    // Bind the texture to texture unit 0
+    gl.bindTexture(gl.TEXTURE_3D, texture);
+    // Tell the shader we bound the texture to texture unit 0
+    gl.uniform1i(programInfo.uniformLocations.uVolume, 0);
+  }
 
-
-  // Tell WebGL we want to affect texture unit 0
-  gl.activeTexture(gl.TEXTURE0);
-  // Bind the texture to texture unit 0
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  // Tell the shader we bound the texture to texture unit 0
-  gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
-
-
-  //{
-  //  const offset = 0;
-  //  const vertexCount = 4;
-  //  gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-  //}
   {
   const vertexCount = 36;
   const type = gl.UNSIGNED_SHORT;
   const offset = 0;
   gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
-}
+  }
+  
 
 }
 

@@ -1,3 +1,6 @@
+#version 300 es
+
+precision highp int;
 precision highp float;
 
 //UNIFORMS
@@ -16,19 +19,24 @@ uniform float uLightRadius;
 uniform float uLightDistance;
 uniform int uLightNRays;
 //textures
-uniform sampler2D uSampler;
+uniform highp sampler3D uVolume;
 
 //VARYINGS
-varying highp vec2 vTextureCoord;
-varying highp vec3 vLighting;
+in vec3 vTextureCoord;
+
+out vec4 frag_color;
 
 
 
 void main(void) {
-  highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
+  highp vec4 texelColor = texture(uVolume, vTextureCoord);
 
-  gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
-
-  if(uTFColor.r < 0.5)
-    gl_FragColor = vec4(1,0,0,1);
+  frag_color = vec4(vTextureCoord, 1);
+  //frag_color = texelColor;
+  if(texelColor.r >= .76)
+    frag_color = vec4(1,0,0,1);
+  else
+    frag_color = vec4(0,0,1,1);
 }
+
+//send the data to the texture!
