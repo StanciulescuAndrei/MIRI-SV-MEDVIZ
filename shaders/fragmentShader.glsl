@@ -32,11 +32,7 @@ void main(void) {
   highp vec4 texelColor = texture(uVolume, vTextureCoord);
 
   frag_color = vec4(vTextureCoord, 1);
-  //frag_color = texelColor;
-  if(texelColor.r >= .76)
-    frag_color = vec4(1,0,0,1);
-  else
-    frag_color = vec4(0,0,1,1);
+  
 }
 
 //send the data to the texture!
