@@ -52,10 +52,10 @@ function initializeColorMap(minValue, maxValue) {
     opacityValue.value = opacity;
     startSlope1 = minValue;
     startSlope1Value.value = minValue;
-    endSlope1 = maxValue;
-    endSlope1Value.value = maxValue;
-    startSlope2 = maxValue;
-    startSlope2Value.value = maxValue;
+    endSlope1 = minValue + (maxValue - minValue) / 3;
+    endSlope1Value.value = minValue + (maxValue - minValue) / 3;
+    startSlope2 = minValue + (maxValue - minValue) * 2 / 3;
+    startSlope2Value.value = minValue + (maxValue - minValue) * 2 / 3;
     endSlope2 = maxValue;
     endSlope2Value.value = maxValue;
     selectedColor = "#FFFFFF";
