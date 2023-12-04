@@ -19,6 +19,7 @@ uniform float uLightRadius;
 uniform float uLightDistance;
 uniform int uLightNRays;
 //textures
+uniform vec3 uDimensions;
 uniform highp sampler3D uVolume;
 
 //VARYINGS
@@ -29,6 +30,7 @@ out vec4 frag_color;
 
 
 void main(void) {
+  
   highp vec4 texelColor = texture(uVolume, vTextureCoord);
 
   frag_color = vec4(vTextureCoord, 1);

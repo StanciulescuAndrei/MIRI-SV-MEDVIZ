@@ -175,7 +175,7 @@ async function loadModel(gl, texture, min, max) {
         // Display model information
         fileInfoContainer.innerHTML = `
           <p>Model Name: ${modelData.name}</p>
-          <p>Dimensions: ${modelData.width} x ${modelData.height} x ${modelData.depth}</p>
+          <p>Dimensions: <span id="dimX">${modelData.width}</span> x <span id="dimY">${modelData.height}</span> x <span id="dimZ">${modelData.depth}</span></p>
           <!-- Add more information as needed -->
         `;
         // Placeholder function for using the model data in WebGL viewer
