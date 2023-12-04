@@ -37,14 +37,33 @@ void main(void) {
   highp vec4 texelColor;
   float grayvalue;
   float scaling = 0.0f;
+  float sampleDistance = 0.005f;
 
-  for(int i=0;i<150;i++){
-    scaling = scaling + 0.01f;
-    texelColor = texture(uVolume, vTextureCoord + direction * scaling);
-    grayvalue += (texelColor.r - uTF.x) / (uTF.w - uTF.x) / 50.0f;
+  for(int i=0;i<int(3.0f / sampleDistance);i++){
+
+    // New sample point along the ray
+    vec3 samplePoint = vTextureCoord + direction * scaling;
+
+    // We stop when we get out of the volume since the texture is clamped we could get artifacts
+    if(samplePoint.x < 0.0f || samplePoint.y < 0.0f || samplePoint.z < 0.0f)
+      break;
+    if(samplePoint.x > 1.0f || samplePoint.y > 1.0f || samplePoint.z > 1.0f)
+      break;
+    
+    // Advance sample point
+    scaling = scaling + sampleDistance;
+
+    // Get color
+    texelColor = texture(uVolume, samplePoint);
+
+    // Do some magic with the TF, still need to implement it
+    grayvalue += (texelColor.r - uTF.x) / (uTF.w - uTF.x) * sampleDistance;
+
+    // Stop when the accumulation is already too high
     if(grayvalue > 0.95f)
       break;
   }
+  
   frag_color = vec4(grayvalue, grayvalue, grayvalue, 1.0f );
   
 }
