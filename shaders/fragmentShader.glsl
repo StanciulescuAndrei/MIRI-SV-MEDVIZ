@@ -23,15 +23,29 @@ uniform highp sampler3D uVolume;
 
 //VARYINGS
 in vec3 vTextureCoord;
+in vec3 fragPos;
 
 out vec4 frag_color;
 
 
 
 void main(void) {
-  highp vec4 texelColor = texture(uVolume, vTextureCoord);
+  mat4 inverseView = inverse(uModelViewMatrix);
+  vec4 cameraPos = inverseView * vec4(0.0f, 0.0f, 0.0f, 1.0f);
+  vec3 direction = normalize(fragPos - cameraPos.xyz);
 
-  frag_color = vec4(vTextureCoord, 1);
+  highp vec4 texelColor;
+  float grayvalue;
+  float scaling = 0.0f;
+
+  for(int i=0;i<150;i++){
+    scaling = scaling + 0.01f;
+    texelColor = texture(uVolume, vTextureCoord + direction * scaling);
+    grayvalue += (texelColor.r - uTF.x) / (uTF.w - uTF.x) / 50.0f;
+    if(grayvalue > 0.95f)
+      break;
+  }
+  frag_color = vec4(grayvalue, grayvalue, grayvalue, 1.0f );
   
 }
 

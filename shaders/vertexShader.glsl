@@ -12,8 +12,10 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 out vec3 vTextureCoord;
+out vec3 fragPos;
 
 void main(void) {
   gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+  fragPos = aVertexPosition.xyz;
   vTextureCoord = aTextureCoord;
 }
