@@ -180,6 +180,7 @@ function main() {
       modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
       normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
       uVolume: gl.getUniformLocation(shaderProgram, "uVolume"),
+      dimensions: gl.getUniformLocation(shaderProgram, "uDimensions"),
       tF:gl.getUniformLocation(shaderProgram, "uTF"),
       tFOpacity: gl.getUniformLocation(shaderProgram, "uTFOpacity"),
       tFColor: gl.getUniformLocation(shaderProgram, "uTFColor"),
@@ -221,7 +222,15 @@ function main() {
     }
 
     //RENDER
-    drawScene(gl, programInfo, buffers, texture, camera, tF, light);
+    let dimensions = [1,1,1];
+    if(document.getElementById('dimX') != null)
+    {
+      dimensions = [parseInt(document.getElementById('dimX').textContent), 
+                    parseInt(document.getElementById('dimY').textContent), 
+                    parseInt(document.getElementById('dimZ').textContent)];
+      //console.log(dimensions);
+    }
+    drawScene(gl, programInfo, buffers, texture, camera, tF, light, dimensions);
   
     //POST-FRAME
     //Frame rate

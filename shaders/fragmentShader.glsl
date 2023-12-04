@@ -19,10 +19,12 @@ uniform float uLightRadius;
 uniform float uLightDistance;
 uniform int uLightNRays;
 //textures
+uniform vec3 uDimensions;
 uniform highp sampler3D uVolume;
 
 //VARYINGS
 in vec3 vTextureCoord;
+in vec3 fragPos;
 in vec3 fragPos;
 
 out vec4 frag_color;
