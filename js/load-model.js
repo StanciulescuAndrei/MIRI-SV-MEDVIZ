@@ -30,7 +30,7 @@ function loadTexture(gl, texture, modelData){
   gl.bindTexture(gl.TEXTURE_3D, texture);
 
   const levels = 1;
-  const internalFormat = gl.R32F;//R16F;//R32F;
+  const internalFormat = gl.R16F;//R32F;
   const width = volDims[0];//inverted z and x to to adapt to the raw file structure
   const height = volDims[1];
   const depth = volDims[2];
